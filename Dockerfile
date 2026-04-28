@@ -22,6 +22,7 @@ RUN apt-get update && apt-get install -y \
 RUN wget -O /tmp/firefox.tar.xz \
     "https://download.mozilla.org/?product=firefox-latest&os=linux64&lang=en-US" && \
     tar -xJf /tmp/firefox.tar.xz -C /opt/ && \
+    rm -f /usr/bin/firefox && \
     ln -s /opt/firefox/firefox /usr/bin/firefox
 
 COPY start.sh /start.sh
