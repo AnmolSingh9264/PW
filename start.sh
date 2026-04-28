@@ -1,33 +1,36 @@
 #!/bin/bash
 
-echo "Starting virtual display..."
-Xvfb $DISPLAY -screen 0 $RESOLUTION &
+echo "Starting noVNC server FIRST..."
 
-sleep 2
-
-echo "Starting window manager..."
-fluxbox &
-
-sleep 2
-
-echo "Starting VNC server..."
-x11vnc -display $DISPLAY -nopw -forever -shared &
-
-echo "Starting noVNC (auto UI)..."
 websockify \
   --web=/usr/share/novnc \
   --index vnc_lite.html \
   ${PORT:-6080} localhost:5900 &
 
-# Give everything time to stabilize
-sleep 8
+echo "Starting virtual display..."
+Xvfb :1 -screen 0 1024x768x16 &
 
-echo "Launching Firefox in kiosk mode..."
+sleep 2
 
-DISPLAY=:1 firefox \
-  --no-remote \
-  --new-instance \
-  --kiosk \
-  https://rarestudy.in
+echo "Starting window manager..."
+DISPLAY=:1 fluxbox &
 
-wait
+sleep 2
+
+echo "Starting VNC..."
+x11vnc -display :1 -nopw -forever -shared &
+
+# 🔥 Do NOT block startup — launch browser in background
+echo "Launching Firefox..."
+
+(
+  sleep 5
+  DISPLAY=:1 firefox \
+    --no-remote \
+    --new-instance \
+    --kiosk \
+    https://rarestudy.in
+) &
+
+# Keep container alive
+tail -f /dev/null
