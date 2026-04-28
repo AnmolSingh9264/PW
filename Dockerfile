@@ -1,5 +1,5 @@
 # ============================================================
-#  Cloud Browser Desk — Auto-start Shared Session
+#  Cloud Browser Desk — Firefox (Stable for low RAM)
 # ============================================================
 
 FROM ubuntu:22.04
@@ -8,7 +8,7 @@ ENV DEBIAN_FRONTEND=noninteractive
 ENV DISPLAY=:1
 ENV RESOLUTION=1024x768x16
 
-# ── Install system + desktop + browser ──────────────────────
+# ── Install system + desktop + Firefox ──────────────────────
 RUN apt-get update && apt-get install -y \
     xfce4 \
     xfce4-goodies \
@@ -17,18 +17,16 @@ RUN apt-get update && apt-get install -y \
     fluxbox \
     wget \
     curl \
-    git \
     net-tools \
     novnc \
     websockify \
-    chromium-browser \
+    firefox \
     && rm -rf /var/lib/apt/lists/*
 
 # ── Copy startup script ─────────────────────────────────────
 COPY start.sh /start.sh
 RUN chmod +x /start.sh
 
-# ── Expose port (Render will override via PORT env) ─────────
 EXPOSE 6080
 
 CMD ["/start.sh"]
