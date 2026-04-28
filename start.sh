@@ -24,10 +24,9 @@ echo "Starting Firefox..."
   firefox --no-remote --new-instance --kiosk https://rarestudy.in/
 ) &
 
-echo "Starting noVNC web server (THIS MUST BE FOREGROUND)..."
+echo "Starting noVNC (websockify)..."
 
 exec websockify \
   --web=/usr/share/novnc/ \
-  --bind=0.0.0.0 \
   ${PORT:-6080} \
   localhost:5900
