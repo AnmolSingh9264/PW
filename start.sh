@@ -1,36 +1,33 @@
 #!/bin/bash
-
-echo "Starting web server first (important for Render)..."
-
-# Start noVNC immediately (prevents timeout)
-websockify --web=/usr/share/novnc \
-  --index vnc_lite.html \
-  ${PORT:-6080} localhost:5900 &
+set -e
 
 echo "Starting virtual display..."
-Xvfb :1 -screen 0 1024x768x16 &
 
-sleep 2
+Xvfb :1 -screen 0 1024x768x16 &
+export DISPLAY=:1
+
+sleep 1
 
 echo "Starting window manager..."
-DISPLAY=:1 fluxbox &
+fluxbox &
 
-sleep 2
+sleep 1
 
 echo "Starting VNC server..."
-x11vnc -display :1 -nopw -forever -shared &
+x11vnc -display :1 -nopw -forever -shared -rfbport 5900 &
 
-echo "Launching Firefox after delay..."
+sleep 1
 
-# Launch browser in background (don’t block startup)
+echo "Starting Firefox..."
 (
-  sleep 6
-  DISPLAY=:1 firefox \
-    --no-remote \
-    --new-instance \
-    --kiosk \
-   https://rarestudy.in/
+  sleep 5
+  firefox --no-remote --new-instance --kiosk https://rarestudy.in/
 ) &
 
-# Keep container alive
-while true; do sleep 1000; done
+echo "Starting noVNC web server (THIS MUST BE FOREGROUND)..."
+
+exec websockify \
+  --web=/usr/share/novnc/ \
+  --bind=0.0.0.0 \
+  ${PORT:-6080} \
+  localhost:5900
