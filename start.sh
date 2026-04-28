@@ -1,17 +1,16 @@
 #!/bin/bash
 set -e
 
-echo "Starting X virtual display..."
-
-Xvfb :1 -screen 0 1280x720x24 &
+echo "Starting virtual display (Xvfb)..."
+Xvfb :1 -screen 0 1280x720x24 -ac +extension GLX +render -noreset &
 export DISPLAY=:1
 
-sleep 1
+sleep 2
 
-echo "Starting minimal window manager..."
+echo "Starting window manager (fluxbox)..."
 fluxbox >/dev/null 2>&1 &
 
-sleep 1
+sleep 2
 
 echo "Starting VNC server..."
 x11vnc -display :1 \
@@ -21,20 +20,22 @@ x11vnc -display :1 \
   -rfbport 5900 \
   -bg
 
-sleep 1
+sleep 2
 
-echo "Launching Firefox..."
+echo "Launching Firefox (shared session)..."
 (
-  sleep 4
+  sleep 6
   dbus-launch firefox \
     --no-remote \
     --new-instance \
-    --kiosk https://rarestudy.in/
+    --kiosk \
+    https://rarestudy.in/
 ) &
 
-echo "Starting noVNC (websockify foreground)..."
+echo "Starting noVNC (auto web UI)..."
 
 exec websockify \
   --web=/usr/share/novnc/ \
+  --index vnc.html \
   0.0.0.0:${PORT:-6080} \
   localhost:5900
