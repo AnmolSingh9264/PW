@@ -33,5 +33,6 @@ echo "Launching Firefox..."
 echo "Starting noVNC..."
 
 exec websockify \
+  --web=/usr/share/novnc/ \
   0.0.0.0:${PORT:-6080} \
   localhost:5900
