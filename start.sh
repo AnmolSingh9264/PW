@@ -28,7 +28,7 @@ sleep 2
 echo "Launching Firefox (shared session)..."
 (
   sleep 6
-  dbus-launch firefox \
+  dbus-launch /usr/bin/firefox \
     --no-remote \
     --new-instance \
     --kiosk \
